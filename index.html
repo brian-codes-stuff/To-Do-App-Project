@@ -2,15 +2,52 @@
 <html>
 <head>
     <title>Simple To-Do App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-    <div class="main">
-        <h1>Simple To-Do List</h1>
-        <input id="taskInput" type="text" placeholder="Enter new task">
-        <button id="addButton">Add task</button>
-        <ul id="taskList"></ul>
+    <div class="app-container bg-white shadow-sm rounded">
+        <header class="app-header py-3 px-4 border-bottom">
+            <h1 class="app-title text-primary mb-0">To-Do List</h1>
+        </header>
+        <div class="px-4 py-3">
+            <div class="input-container mb-3">
+                <div class="row">
+                    <div class="col-sm-7 mb-2 mb-sm-0">
+                        <input class="form-control" id="taskInput" type="text" placeholder="What's next?">
+                    </div>
+                    <div class="col-sm-3 mb-2 mb-sm-0">
+                        <input class="form-control" id="taskDate" type="text" placeholder="Select Date">
+                    </div>
+                    <div class="col-sm-2">
+                        <button class="btn btn-primary w-100" id="addButton">Add</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <select id="sortOption" class="form-control">
+                        <option value="default">Sort By</option>
+                        <option value="date">Date</option>
+                        <option value="alphabet">Alphabet</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="text-primary mb-3">Existing Tasks</h3>
+                    <ul class="list-unstyled" id="taskList"></ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="text-primary mb-3">Completed Tasks</h3>
+                    <ul class="list-unstyled" id="completedTaskList"></ul>
+                </div>
+            </div>
+        </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="app.js"></script>
 </body>
 </html>

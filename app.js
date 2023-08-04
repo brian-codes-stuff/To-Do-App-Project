@@ -1,64 +1,102 @@
-// Select elements
-let taskInput = document.getElementById('taskInput');
-let addButton = document.getElementById('addButton');
-let taskList = document.getElementById('taskList');
+// Once upon a time in a far away browser...
+document.getElementById("addButton").addEventListener("click", addTask); // When the "Add" button hears a click, it calls upon addTask
+document.getElementById("sortOption").addEventListener("change", loadTasks); // When "Sort By" dropdown hears a change, it wakes up loadTasks
 
-// Check if there is any data in localStorage
-if(localStorage.getItem('tasks')) {
-    // Parse the data to JSON and store it in tasks
-    let tasks = JSON.parse(localStorage.getItem('tasks'));
+// Our journey begins when the page has fully loaded
+window.onload = function() {
+    // The date picker fairy sprinkles some magic to make selecting dates enchanting!
+    flatpickr("#taskDate", {
+        altInput: true,
+        altFormat: "m/d/Y",
+        dateFormat: "Y-m-d"
+    });
 
-    // Loop through tasks
-    for(let i = 0; i < tasks.length; i++) {
-        // Create a new list item
-        let newTask = document.createElement('li');
+    // We summon all tasks from the non-persistent realm
+    loadTasks();
+};
 
-        // Add the task text to the list item
-        newTask.textContent = tasks[i];
+let tasks = []; // Our trusty steed, a gallant array that will carry our tasks on its back
 
-        // Add the list item to the task list
-        taskList.appendChild(newTask);
-    }
-}
-
-// Define the addTask function to handle adding new tasks
+// A magical scroll known as addTask
 function addTask() {
-    // Get the task text from the input
-    let taskText = taskInput.value;
+    // It captures the words of the user from the mysterious taskInput field
+    var task = document.getElementById("taskInput").value;
 
-    // If the task is not empty
-    if(taskText) {
-        // Create a new list item
-        let newTask = document.createElement('li');
-        
-        // Add the task text to the list item
-        newTask.textContent = taskText;
-        
-        // Add the list item to the task list
-        taskList.appendChild(newTask);
+    // It even knows the date when the user wishes the task to be done!
+    var taskDate = document.getElementById("taskDate").value;
 
-        // Store the task in localStorage
-        // Check if 'tasks' is null
-        if(localStorage.getItem('tasks') === null) {
-            // Initialize an empty array
-            let tasks = [];
-            // Add the task to array
-            tasks.push(taskText);
-            // Store the array in localStorage
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-        } else {
-            // Get the existing tasks from localStorage
-            let tasks = JSON.parse(localStorage.getItem('tasks'));
-            // Add the new task to array
-            tasks.push(taskText);
-            // Re-store the array in localStorage
-            localStorage.setItem('tasks', JSON.stringify(tasks));
+    // But the scroll refuses to work on empty words and alerts the user
+    if (task.trim() === '') return alert("The scroll can't work on empty tasks!");
+
+    // It sends the new task on a quest, setting its completion status to false
+    tasks.push({ task, taskDate, completed: false });
+
+    // A sorting spell to order tasks by date or alphabet, as per the user's wish
+    tasks.sort(function(a, b) {
+        var sortOption = document.getElementById("sortOption").value;
+        if (sortOption === "date") {
+            return new Date(a.taskDate) - new Date(b.taskDate);
+        } else if (sortOption === "alphabet") {
+            return a.task.localeCompare(b.task);
         }
+    });
 
-        // Clear the input field
-        taskInput.value = '';
-    }
+    // With the new tasks added, we summon the loadTasks scroll once more
+    loadTasks();
+
+    // Clear the input fields, ready for the user's next task
+    document.getElementById("taskInput").value = '';
+    document.getElementById("taskDate").value = '';
 }
 
-// Attach an event listener to the add button to call the addTask function when clicked
-addButton.addEventListener('click', addTask);
+// Another magical scroll named loadTasks
+function loadTasks() {
+    // It clears the path for the new tasks to be displayed
+    document.getElementById("taskList").innerHTML = '';
+    document.getElementById("completedTaskList").innerHTML = '';
+
+    // It applies the sorting spell on the loaded tasks
+    tasks.sort(function(a, b) {
+        var sortOption = document.getElementById("sortOption").value;
+        if (sortOption === "date") {
+            return new Date(a.taskDate) - new Date(b.taskDate);
+        } else if (sortOption === "alphabet") {
+            return a.task.localeCompare(b.task);
+        }
+    });
+
+    // One by one, it presents each task to the user
+    tasks.forEach(function(task, i) {
+        var li = document.createElement('li');
+        // Here the formatDate spell changes the date format to "MM/DD/YYYY"
+        li.innerHTML = '<input type="checkbox" class="form-check-input" id="task' + i + '"' + (task.completed ? ' checked' : '') + '><label class="form-check-label' + (task.completed ? ' completed' : '') + '" for="task' + i + '">' + task.task + ' - ' + formatDate(task.taskDate) + '</label>';
+        li.addEventListener("change", function() {
+            completeTask(i);
+        });
+
+        // If the task is completed, it proudly displays it in the completed tasks list, otherwise in the existing tasks list
+        if (task.completed) {
+            document.getElementById("completedTaskList").appendChild(li);
+        } else {
+            document.getElementById("taskList").appendChild(li);
+        }
+    });
+}
+
+// The final spell called completeTask
+function completeTask(i) {
+    // It changes the destiny of the task at index i
+    tasks[i].completed = !tasks[i].completed;
+
+    // And finally, it makes a call to the loadTasks scroll to update the task list
+    loadTasks();
+}
+
+// Helper function to format the date
+function formatDate(date) {
+    // If there's no date, the spell doesn't need to work its magic
+    if (!date) return '';
+    // The spell changes the date from the 'YYYY-MM-DD' format to 'MM/DD/YYYY'
+    const [year, month, day] = date.split('-');
+    return `${month}/${day}/${year}`;
+}
